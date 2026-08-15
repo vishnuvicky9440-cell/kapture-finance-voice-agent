@@ -1,155 +1,67 @@
-const express = require("express");
-const dotenv = require("dotenv");
+# Kapture Finance Voice Agent
 
-dotenv.config();
+## Overview
 
-const app = express();
-app.use(express.json());
+This project is a Voice AI Collections Agent built using Vapi AI and a Node.js mock server.
 
-const PORT = process.env.PORT || 3000;
+The assistant can:
+- Authenticate customers using their phone number
+- Fetch customer loan details
+- Share outstanding balance and EMI due date
+- Record Promise to Pay (PTP)
+- Send payment links
+- Escalate calls to a human agent
 
-/* -----------------------------
-   Sample Customer Database
-------------------------------*/
+## Tech Stack
 
-const customers = [
-  {
-    phoneNumber: "9392592907",
-    customerName: "Rahul Sharma",
-    loanId: "LN10001",
-    outstandingAmount: 25000,
-    emiDueDate: "2026-08-25",
-    status: "Overdue"
-  },
-  {
-    phoneNumber: "9876543210",
-    customerName: "Priya Verma",
-    loanId: "LN10002",
-    outstandingAmount: 18000,
-    emiDueDate: "2026-08-20",
-    status: "Pending"
-  }
-];
+- Vapi AI
+- OpenAI GPT-4o
+- Deepgram STT
+- ElevenLabs / Cartesia TTS
+- Node.js
+- Express.js
+- Ngrok
 
-/* -----------------------------
-   Health Check
-------------------------------*/
+## API Endpoints
 
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Kapture Finance Mock Server Running"
-  });
-});
+- POST /customer
+- POST /promise-to-pay
+- POST /payment-link
+- POST /escalate
+- POST /disposition
 
-/* -----------------------------
-   Customer Lookup
-------------------------------*/
+## Running the Project
 
-app.post("/customer", (req, res) => {
+Install dependencies:
 
-  console.log("\n========== CUSTOMER REQUEST ==========");
-  console.log(req.body);
-  console.log("======================================\n");
+```bash
+npm install
+```
 
-  const phone = req.body.phoneNumber;
+Start the server:
 
-  const customer = customers.find(
-    c => c.phoneNumber === phone
-  );
+```bash
+node server.js
+```
 
-  if (!customer) {
-    return res.json({
-      success: false,
-      message: "Customer not found"
-    });
-  }
+Start ngrok:
 
-  res.json({
-    success: true,
-    customerName: customer.customerName,
-    loanId: customer.loanId,
-    outstandingAmount: customer.outstandingAmount,
-    emiDueDate: customer.emiDueDate,
-    status: customer.status
-  });
+```bash
+ngrok http 3000
+```
 
-});
+## Demo
 
-/* -----------------------------
-   Promise To Pay
-------------------------------*/
+The assistant successfully:
 
-app.post("/promise-to-pay", (req, res) => {
+- Authenticates customer
+- Retrieves loan details
+- Shares outstanding amount
+- Provides EMI due date
+- Handles Promise to Pay
+- Sends payment link
+- Escalates to human agent
 
-  console.log(req.body);
+## Author
 
-  res.json({
-    success: true,
-    promiseId: "PTP-" + Math.floor(Math.random() * 9000 + 1000),
-    message: "Promise to Pay recorded successfully."
-  });
-
-});
-
-/* -----------------------------
-   Payment Link
-------------------------------*/
-
-app.post("/payment-link", (req, res) => {
-
-  console.log(req.body);
-
-  res.json({
-    success: true,
-    paymentLink:
-      "https://payments.example.com/pay/LN10001"
-  });
-
-});
-
-/* -----------------------------
-   Escalate
-------------------------------*/
-
-app.post("/escalate", (req, res) => {
-
-  console.log(req.body);
-
-  res.json({
-    success: true,
-    ticketId:
-      "ESC-" + Math.floor(Math.random() * 9000 + 1000),
-    message: "Customer transferred to human agent."
-  });
-
-});
-
-/* -----------------------------
-   Call Disposition
-------------------------------*/
-
-app.post("/disposition", (req, res) => {
-
-  console.log(req.body);
-
-  res.json({
-    success: true,
-    message: "Disposition saved."
-  });
-
-});
-
-/* -----------------------------
-   Start Server
-------------------------------*/
-
-app.listen(PORT, () => {
-
-  console.log("");
-  console.log("======================================");
-  console.log(" Kapture Finance Mock Server Running");
-  console.log(" http://localhost:" + PORT);
-  console.log("======================================");
-
-});
+Vishnu Vardhan
