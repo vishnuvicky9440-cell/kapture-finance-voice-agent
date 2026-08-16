@@ -1,67 +1,152 @@
-# Kapture Finance Voice Agent
+const express = require("express");
+const dotenv = require("dotenv");
 
-## Overview
+dotenv.config();
 
-This project is a Voice AI Collections Agent built using Vapi AI and a Node.js mock server.
+const app = express();
+app.use(express.json());
 
-The assistant can:
-- Authenticate customers using their phone number
-- Fetch customer loan details
-- Share outstanding balance and EMI due date
-- Record Promise to Pay (PTP)
-- Send payment links
-- Escalate calls to a human agent
+const PORT = process.env.PORT || 3000;
 
-## Tech Stack
+/* -----------------------------
+   Sample Customer Database
+------------------------------*/
 
-- Vapi AI
-- OpenAI GPT-4o
-- Deepgram STT
-- ElevenLabs / Cartesia TTS
-- Node.js
-- Express.js
-- Ngrok
+const customers = [
+  {
+    phoneNumber: "9392592907",
+    customerName: "Rahul Sharma",
+    loanId: "LN10001",
+    outstandingAmount: 25000,
+    emiDueDate: "2026-08-25",
+    status: "Overdue"
+  },
+  {
+    phoneNumber: "9876543210",
+    customerName: "Priya Verma",
+    loanId: "LN10002",
+    outstandingAmount: 18000,
+    emiDueDate: "2026-08-20",
+    status: "Pending"
+  }
+];
 
-## API Endpoints
+/* -----------------------------
+   Health Check
+------------------------------*/
 
-- POST /customer
-- POST /promise-to-pay
-- POST /payment-link
-- POST /escalate
-- POST /disposition
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Kapture Finance Mock Server Running"
+  });
+});
 
-## Running the Project
+/* -----------------------------
+   Customer Lookup
+------------------------------*/
 
-Install dependencies:
+app.post("/customer", (req, res) => {
 
-```bash
-npm install
-```
+  console.log("\n========== CUSTOMER REQUEST ==========");
+  console.log(req.body);
+  console.log("======================================\n");
 
-Start the server:
+  const phone = req.body.phoneNumber;
 
-```bash
-node server.js
-```
+  const customer = customers.find(
+    c => c.phoneNumber === phone
+  );
 
-Start ngrok:
+  if (!customer) {
+    return res.json({
+      success: false,
+      message: "Customer not found"
+    });
+  }
 
-```bash
-ngrok http 3000
-```
+  res.json({
+    success: true,
+    customerName: customer.customerName,
+    loanId: customer.loanId,
+    outstandingAmount: customer.outstandingAmount,
+    emiDueDate: customer.emiDueDate,
+    status: customer.status
+  });
 
-## Demo
+});
 
-The assistant successfully:
+/* -----------------------------
+   Promise To Pay
+------------------------------*/
 
-- Authenticates customer
-- Retrieves loan details
-- Shares outstanding amount
-- Provides EMI due date
-- Handles Promise to Pay
-- Sends payment link
-- Escalates to human agent
+app.post("/promise-to-pay", (req, res) => {
 
-## Author
+  console.log(req.body);
 
-Vishnu Vardhan
+  res.json({
+    success: true,
+    promiseId: "PTP-" + Math.floor(Math.random() * 9000 + 1000),
+    message: "Promise to Pay recorded successfully."
+  });
+
+});
+
+/* -----------------------------
+   Payment Link
+------------------------------*/
+
+app.post("/payment-link", (req, res) => {
+
+  console.log(req.body);
+
+  res.json({
+    success: true,
+    paymentLink: "https://payments.example.com/pay/LN10001"
+  });
+
+});
+
+/* -----------------------------
+   Escalate
+------------------------------*/
+
+app.post("/escalate", (req, res) => {
+
+  console.log(req.body);
+
+  res.json({
+    success: true,
+    ticketId: "ESC-" + Math.floor(Math.random() * 9000 + 1000),
+    message: "Customer transferred to human agent."
+  });
+
+});
+
+/* -----------------------------
+   Call Disposition
+------------------------------*/
+
+app.post("/disposition", (req, res) => {
+
+  console.log(req.body);
+
+  res.json({
+    success: true,
+    message: "Disposition saved."
+  });
+
+});
+
+/* -----------------------------
+   Start Server
+------------------------------*/
+
+app.listen(PORT, () => {
+
+  console.log("======================================");
+  console.log("Kapture Finance Mock Server Running");
+  console.log("http://localhost:" + PORT);
+  console.log("======================================");
+
+});
